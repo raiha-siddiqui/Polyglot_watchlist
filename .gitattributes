@@ -1,0 +1,4 @@
+# Keep LF in every checkout: workflow fingerprints and receipts hash exact file bytes.
+* text=auto eol=lf
+*.whl binary
+*.sqlite binary

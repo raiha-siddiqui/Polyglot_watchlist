@@ -1,0 +1,21 @@
+# Allowlist: the image needs only the build inputs and two fictional configs.
+*
+!pyproject.toml
+!uv.lock
+!README.md
+!src/
+!config/review-v2.json
+!config/memory.json
+
+# Never send these to the build context, even if the allowlist changes.
+data/
+models/
+.venv/
+.venv-*/
+.tools/
+.git/
+.env
+.env.*
+deploy/secrets/
+**/__pycache__/
+**/*.py[cod]

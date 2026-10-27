@@ -16,7 +16,8 @@ jobs:
   offline-checks:
     name: Python 3.14 on Ubuntu
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # Step 29 added the v2 API/UI/MCP/memory suites (several minutes each locally).
+    timeout-minutes: 75
     env:
       UV_PYTHON_DOWNLOADS: never
       PYTHONDONTWRITEBYTECODE: "1"
@@ -48,9 +49,11 @@ jobs:
           cache-local-path: ${{ runner.temp }}/watchlist-uv-cache
           download-from-astral-mirror: false
 
-      # Acquisition happens before the offline boundary. Preserve all extras:
-      # non-integration tests use NumPy and Torch. Torch plus candidate Linux
-      # NVIDIA wheels alone total about 2.74 GB in the original lock; that is a
+      # Acquisition happens before the offline boundary. Install all extras:
+      # non-integration tests use NumPy and Torch, and the Step 19-29 suites need
+      # the agent, api, ui, mcp, preprocessing, index and llm extras. No LLM
+      # API key is configured, so no live provider call can run. Torch plus
+      # candidate Linux NVIDIA wheels alone total about 2.74 GB in the original lock; that is a
       # partial size sum, not a measured complete installation. No models or
       # live source data are acquired by these commands.
       - name: Install locked runtime and quality tools
@@ -65,7 +68,7 @@ jobs:
           test ! -e .tools/qa
           test ! -L .tools/qa
           UV_PROJECT_ENVIRONMENT="$PWD/.venv" "$CI_UV" sync \
-            --locked --dev --extra embeddings --extra agent --python "$CI_PYTHON"
+            --locked --dev --all-extras --python "$CI_PYTHON"
           UV_PROJECT_ENVIRONMENT="$PWD/.tools/qa" "$CI_UV" sync \
             --locked --only-group qa --no-install-project --python "$CI_PYTHON"
 
@@ -187,7 +190,10 @@ jobs:
           test -d "$ci_wheelhouse"
           test ! -L "$ci_wheelhouse"
 
-          sudo unshare --net -- \
+          # A new network namespace starts with loopback down; bring it up (as
+          # root, before privileges are dropped) so loopback-only tests can bind
+          # 127.0.0.1. No other interface exists in the namespace.
+          sudo unshare --net -- /bin/sh -c 'ip link set lo up && exec "$@"' lo-up \
             setpriv --reuid "$ci_uid" --regid "$ci_gid" --clear-groups \
               --bounding-set=-all --inh-caps=-all --ambient-caps=-all \
               --no-new-privs --reset-env \
@@ -232,6 +238,17 @@ jobs:
           import sentence_transformers
           import torch
           from langgraph.checkpoint.sqlite import SqliteSaver
+          # Step 19-29 extras (api, ui, mcp, preprocessing, index, llm).
+          import anthropic
+          import anyascii
+          import fastapi
+          import httpx
+          import jellyfish
+          import mcp
+          import portalocker
+          import streamlit
+          import usearch
+          import uvicorn
           VERIFY_ENVIRONMENT
           "$QA_PYTHON" -I -B -m pre_commit validate-config
           "$QA_PYTHON" -I -B -m pre_commit run --all-files
@@ -240,4 +257,95 @@ jobs:
           # The full non-integration suite includes the packaging checks.
           make test
           make eval-smoke
+          # Fictional end-to-end walkthrough: API (in process) -> review ->
+          # memory publication -> prior-annotation context -> MCP read.
+          make demo DEMO_OUTPUT="$TMPDIR/watchlist-demo"
           OFFLINE_CHECKS
+
+  # Portability evidence for the modules that claim Windows support (portable
+  # portalocker locks, pathlib, explicit UTF-8). No network namespace exists
+  # here, so offline behaviour rests on the tests themselves (loopback only)
+  # and the offline environment flags below; it is not enforced by the runner.
+  windows-portable:
+    name: Python 3.14 on Windows (portable v2 modules)
+    runs-on: windows-latest
+    timeout-minutes: 75
+    env:
+      UV_PYTHON_DOWNLOADS: never
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUTF8: "1"
+    steps:
+      - name: Check out project
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python
+        id: python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14.0"
+          architecture: x64
+          check-latest: false
+
+      # Same action commit and uv version as the Linux job. The Windows x86_64
+      # archive hash was not read from this action commit's table in Step 29,
+      # so no explicit checksum is pinned here yet (open item in
+      # docs/progress/completion-29.md).
+      - name: Set up uv
+        id: uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: "0.13.5"
+          enable-cache: false
+          cache-local-path: ${{ runner.temp }}/watchlist-uv-cache
+          download-from-astral-mirror: false
+
+      - name: Install locked runtime
+        shell: bash
+        env:
+          CI_PYTHON: ${{ steps.python.outputs.python-path }}
+          CI_UV: ${{ steps.uv.outputs.uv-path }}
+        run: |
+          test ! -e .venv
+          UV_PROJECT_ENVIRONMENT="$PWD/.venv" "$CI_UV" sync \
+            --locked --dev --all-extras --python "$CI_PYTHON"
+
+      - name: Run portable v2 test modules offline
+        shell: bash
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_DATASETS_OFFLINE: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          LANGSMITH_TRACING: "false"
+          LANGCHAIN_TRACING_V2: "false"
+          UV_OFFLINE: "1"
+          PIP_NO_INDEX: "1"
+          RUN_EMBEDDING_INTEGRATION: "0"
+          RUN_RERANKER_INTEGRATION: "0"
+          RUN_AGENT_E5_INTEGRATION: "0"
+        run: |
+          .venv/Scripts/python.exe -B -m pytest -q -p no:cacheprovider \
+            tests/test_review_v2_contracts.py tests/test_review_v2_service.py \
+            tests/test_review_v2_recovery.py tests/test_review_v2_concurrency.py \
+            tests/test_review_v2_cli.py tests/test_review_v2_portability.py \
+            tests/test_api.py tests/test_api_auth.py tests/test_api_concurrency.py \
+            tests/test_ui_client.py tests/test_ui_components.py tests/test_ui_app.py \
+            tests/test_mcp_tools.py tests/test_mcp_server.py tests/test_mcp_stdio.py \
+            tests/test_case_memory_identifiers.py tests/test_case_memory_store.py \
+            tests/test_case_memory_publisher.py tests/test_case_memory_provider.py \
+            tests/test_case_memory_lifecycle.py tests/test_case_memory_evaluation.py \
+            tests/test_review_backup.py tests/test_review_retention.py \
+            tests/test_observability.py tests/test_security_hardening.py \
+            tests/test_load_failure.py tests/test_integration_v2_stack.py \
+            tests/test_preprocessing.py tests/test_structured_input.py \
+            tests/test_baselines.py tests/test_hybrid_retrieval.py \
+            tests/test_vector_index.py tests/test_synthetic_corpus.py \
+            tests/test_reconciliation.py \
+            tests/test_llm_contracts.py tests/test_llm_comparison.py \
+            tests/test_explanation_grounding.py tests/test_prompt_injection.py \
+            tests/test_training.py tests/test_training_data.py \
+            tests/test_training_losses.py tests/test_model_artifacts.py \
+            tests/test_calibration.py tests/test_review_policy.py

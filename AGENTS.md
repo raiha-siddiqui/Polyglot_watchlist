@@ -1,7 +1,7 @@
 # Polyglot Watchlist — Codex Collaboration Rules
 
 ## Source of truth
-Read `docs/reference/internship-2093-portfolio-plan.html`, primarily Project 1 (Polyglot Watchlist Agent), plus its engineering standards and AI coding-agent guidance. Do not implement Project 2. Treat the reference as a project proposal, not as proof that tools, datasets, deadlines, model claims, or licenses are current.
+Read `docs/reference/internship-2093-portfolio-plan.html`, primarily Project 1 (Polyglot Watchlist Agent), plus its engineering standards and AI coding-agent guidance. Project 2 (Follow the Money) is maintained in its own repository; this repository serves it only through the public v2 review service, which it may call to resolve sanctioned-wallet owner names. Treat the reference as a project proposal, not as proof that tools, datasets, deadlines, model claims, or licenses are current.
 
 ## Objective
 Build a research-only multilingual entity/name matching prototype using approved public sanctions data (start with fictional synthetic data). It assists human review; it does not establish criminality or identity and is not a live screening/compliance service.
@@ -16,6 +16,8 @@ Build a research-only multilingual entity/name matching prototype using approved
 - Never hardcode secrets. Favor local deterministic tests. Show uncertainties; do not fabricate results or scores.
 
 ## Phase order
+Follow the list below and the completion sequence in `docs/project-completion-plan.md`.
+
 0. Read reference; propose one-page design, precise scope, DAG, evaluation plan, phased tasks and acceptance criteria. No application code until approved.
 1. Minimal synthetic entities and aliases; Python normalization; simple RapidFuzz baseline; unit tests and sample CLI.
 2. Ingest a licensed/permitted subset of public data; SQLite schema with source provenance; entity-level split and deduplication.

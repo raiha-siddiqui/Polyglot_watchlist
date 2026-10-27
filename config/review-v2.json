@@ -1,0 +1,22 @@
+{
+  "config_version": "review-config-v2",
+  "workflow": {
+    "top_k": 5,
+    "name_max_chars": 200,
+    "reason_max_chars": 1000,
+    "actor_max_chars": 120,
+    "allowed_origins": ["human", "simulated_demo", "test", "unknown"],
+    "explanation_template": "evidence-v2",
+    "context_max_bytes": 65536
+  },
+  "retriever": {
+    "kind": "rapidfuzz",
+    "dataset": "packaged-fictional",
+    "embedding_config": null
+  },
+  "operations": {
+    "lock_timeout_seconds": 5.0,
+    "max_cases": 10000,
+    "page_max": 200
+  }
+}

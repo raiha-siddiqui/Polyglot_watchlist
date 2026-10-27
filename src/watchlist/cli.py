@@ -5,6 +5,7 @@ from dataclasses import asdict
 import json
 from pathlib import Path
 import sqlite3
+import sys
 from typing import Sequence
 
 from watchlist.entities import load_entities
@@ -21,6 +22,10 @@ RESEARCH_NOTICE = (
 
 def main(argv: Sequence[str] | None = None) -> int:
     """Validate CLI arguments and print candidates; errors exit through argparse."""
+    for stream in (sys.stdout, sys.stderr):
+        # Windows consoles default to a legacy code page that cannot show many scripts.
+        if hasattr(stream, "reconfigure") and (stream.encoding or "").lower() != "utf-8":
+            stream.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(
         description="Research-only name matching; fictional records are the default."
     )

@@ -24,7 +24,9 @@ from typing import Iterator
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = "project-checks-v1"
 DETECTOR_VERSION = "1.5.0"
-SCANNER_TIMEOUT_SECONDS = 120
+# Scan the expanded publication scope even on a contended local test host.
+# This bounds the same offline scan; it does not omit files or findings.
+SCANNER_TIMEOUT_SECONDS = 600
 # Isolated Python still loads the selected virtual environment's site-packages.
 # Install the socket guard before loading any detector or verification plugin.
 # Scan each file in this process: Linux's forkserver uses a local socket, and
@@ -121,6 +123,31 @@ SAFE_FINDING_TYPES = frozenset(
 # exception binds the whole file, location and detector type. Changed content
 # or additional findings require a new review; files remain in every scan.
 REVIEWED_NON_SECRET_FINDINGS = {
+    "config/llm.json": {
+        "file_sha256": "f1491ce6fa9840e2881e6cef4b65f138d5ec2f87d5e1bca1d220308b05fecbe5",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset(((6, "Secret Keyword"),)),
+        "reason": "Environment-variable name identifying the optional provider key; no key value.",
+    },
+    "config/memory.json": {
+        "file_sha256": "f65f222b3828f187e8185ebb43e893de43e71f84fa74717ed9c2865656c30f4e",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset(((28, "Hex High Entropy String"),)),
+        "reason": "Integrity digest of the packaged fictional entity snapshot; not a credential.",
+    },
+    "src/watchlist/ui/client.py": {
+        "file_sha256": "cf5e411ea5d8bd1a377c528d465c97575e3c9c8ec580cda333aac6b815b4cb49",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset(((45, "Secret Keyword"),)),
+        "reason": "Name of the API-key environment variable; no key value.",
+    },
+    "tests/test_training.py": {
+        "file_sha256": "4303f16d8274e5420eb6bd5394c416acb2874db47f228330c6086efb7e593fb1",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset(((435, "Hex High Entropy String"),)),
+        "reason": "Model revision in an authored local training fixture; not a credential.",
+    },
+    "tests/test_ui_client.py": {
+        "file_sha256": "b41d02e9936641bb8d981569a88b2fc295c5bbb6dca70e50dad8fe9e3134d832",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset(((58, "Basic Auth Credentials"),)),
+        "reason": "Fictional user:pw loopback URL used to prove credential-bearing URLs are rejected.",
+    },
     "config/corpus-adjudication-v1.json": {
         "file_sha256": "4a865ea83fb452f599d6d1dd92caeda5aa20063f13827bb6ad22b7bab09b4107",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
         "findings": frozenset(
@@ -276,8 +303,8 @@ REVIEWED_NON_SECRET_FINDINGS = {
         "reason": "Reviewed integrity commitments for policy, evidence, code, source payloads and empty-ledger state; not authentication credentials.",
     },
     "tests/test_corpus.py": {
-        "file_sha256": "535886506fc2e014a9a4f9476b9f93e534e00a94bb92b85dd458202a83169039",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
-        "findings": frozenset(((1387, "Hex High Entropy String"),)),
+        "file_sha256": "9fa1aba1c5836290068939481f93df2e4709887b7df96562bb6f1a8ffa7d743f",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset(((1393, "Hex High Entropy String"),)),
         "reason": "Fixed historical SQL schema SHA256 in a fictional compatibility test; not a credential.",
     },
     "tests/test_full_acquisition.py": {
@@ -386,8 +413,8 @@ REVIEWED_NON_SECRET_FINDINGS = {
         "reason": "Pinned public embedding-model revision, not a credential.",
     },
     "src/watchlist/reranking.py": {
-        "file_sha256": "903399ce7b496275de5f5fed3cfe007370493574786fb9b2bd5d49546781fc3f",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
-        "findings": frozenset((line, "Hex High Entropy String") for line in (23,)),
+        "file_sha256": "c22ca8cc3d1caa75c0a2e650055d579ad300a60f6da40352855aafe3af379524",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset((line, "Hex High Entropy String") for line in (22,)),
         "reason": "Pinned public reranker revision, not a credential.",
     },
     "src/watchlist/review/archive.py": {
@@ -421,6 +448,153 @@ REVIEWED_NON_SECRET_FINDINGS = {
         "file_sha256": "339d7cb3a6e183dd933395f318bf3edd71b9bba4c391cf60530f72aaf9e04e37",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
         "findings": frozenset((line, "Hex High Entropy String") for line in (585,)),
         "reason": "Fictional integrity-check digest used by a compatibility regression.",
+    },
+    "docs/progress/review-p1-validation.json": {
+        "file_sha256": "552ba4e0c9555fe1bf6b95aeefa96cb05e58821670cd7cad4af3da61f54025bc",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset(
+            (
+                (154, "Hex High Entropy String"),
+                (168, "Hex High Entropy String"),
+                (182, "Hex High Entropy String"),
+                (196, "Hex High Entropy String"),
+                (210, "Hex High Entropy String"),
+                (515, "Hex High Entropy String"),
+                (532, "Hex High Entropy String"),
+                (547, "Hex High Entropy String"),
+                (562, "Hex High Entropy String"),
+                (578, "Hex High Entropy String"),
+                (594, "Hex High Entropy String"),
+                (609, "Hex High Entropy String"),
+                (625, "Hex High Entropy String"),
+                (1102, "Hex High Entropy String"),
+                (1140, "Hex High Entropy String"),
+                (1141, "Hex High Entropy String"),
+                (1142, "Hex High Entropy String"),
+                (1143, "Hex High Entropy String"),
+                (1144, "Hex High Entropy String"),
+                (1145, "Hex High Entropy String"),
+                (1146, "Hex High Entropy String"),
+                (1147, "Hex High Entropy String"),
+                (1148, "Hex High Entropy String"),
+                (1149, "Hex High Entropy String"),
+                (1150, "Hex High Entropy String"),
+                (1151, "Hex High Entropy String"),
+                (1152, "Hex High Entropy String"),
+                (1153, "Hex High Entropy String"),
+                (1154, "Hex High Entropy String"),
+                (1155, "Hex High Entropy String"),
+                (1156, "Hex High Entropy String"),
+                (1157, "Hex High Entropy String"),
+                (1158, "Hex High Entropy String"),
+                (1159, "Hex High Entropy String"),
+                (1160, "Hex High Entropy String"),
+                (1161, "Hex High Entropy String"),
+                (1162, "Hex High Entropy String"),
+                (1163, "Hex High Entropy String"),
+                (1164, "Hex High Entropy String"),
+                (1165, "Hex High Entropy String"),
+                (1166, "Hex High Entropy String"),
+                (1167, "Hex High Entropy String"),
+                (1168, "Hex High Entropy String"),
+                (1169, "Hex High Entropy String"),
+                (1170, "Hex High Entropy String"),
+                (1171, "Hex High Entropy String"),
+                (1172, "Hex High Entropy String"),
+                (1173, "Hex High Entropy String"),
+                (1174, "Hex High Entropy String"),
+                (1175, "Hex High Entropy String"),
+                (1176, "Hex High Entropy String"),
+                (1177, "Hex High Entropy String"),
+                (1178, "Hex High Entropy String"),
+                (1179, "Hex High Entropy String"),
+                (1180, "Hex High Entropy String"),
+                (1181, "Hex High Entropy String"),
+                (1182, "Hex High Entropy String"),
+                (1183, "Hex High Entropy String"),
+                (1184, "Hex High Entropy String"),
+                (1185, "Hex High Entropy String"),
+                (1186, "Hex High Entropy String"),
+                (1187, "Hex High Entropy String"),
+                (1188, "Hex High Entropy String"),
+                (1189, "Hex High Entropy String"),
+                (1190, "Hex High Entropy String"),
+                (1191, "Hex High Entropy String"),
+                (1192, "Hex High Entropy String"),
+                (1193, "Hex High Entropy String"),
+                (1194, "Hex High Entropy String"),
+                (1195, "Hex High Entropy String"),
+                (1196, "Hex High Entropy String"),
+                (1197, "Hex High Entropy String"),
+                (1198, "Hex High Entropy String"),
+                (1199, "Hex High Entropy String"),
+                (1200, "Hex High Entropy String"),
+                (1201, "Hex High Entropy String"),
+                (1202, "Hex High Entropy String"),
+                (1203, "Hex High Entropy String"),
+                (1204, "Hex High Entropy String"),
+                (1205, "Hex High Entropy String"),
+                (1206, "Hex High Entropy String"),
+                (1207, "Hex High Entropy String"),
+                (1208, "Hex High Entropy String"),
+                (1209, "Hex High Entropy String"),
+                (1210, "Hex High Entropy String"),
+                (1211, "Hex High Entropy String"),
+                (1212, "Hex High Entropy String"),
+                (1213, "Hex High Entropy String"),
+                (1214, "Hex High Entropy String"),
+                (1215, "Hex High Entropy String"),
+                (1216, "Hex High Entropy String"),
+                (1217, "Hex High Entropy String"),
+                (1218, "Hex High Entropy String"),
+                (1219, "Hex High Entropy String"),
+                (1220, "Hex High Entropy String"),
+                (1221, "Hex High Entropy String"),
+                (1222, "Hex High Entropy String"),
+                (1223, "Hex High Entropy String"),
+                (1224, "Hex High Entropy String"),
+                (1225, "Hex High Entropy String"),
+                (1226, "Hex High Entropy String"),
+                (1227, "Hex High Entropy String"),
+                (1228, "Hex High Entropy String"),
+                (1229, "Hex High Entropy String"),
+                (1230, "Hex High Entropy String"),
+                (1231, "Hex High Entropy String"),
+                (1232, "Hex High Entropy String"),
+                (1233, "Hex High Entropy String"),
+                (1234, "Hex High Entropy String"),
+                (1235, "Hex High Entropy String"),
+                (1236, "Hex High Entropy String"),
+                (1237, "Hex High Entropy String"),
+                (1238, "Hex High Entropy String"),
+                (1239, "Hex High Entropy String"),
+                (1240, "Hex High Entropy String"),
+                (1241, "Hex High Entropy String"),
+                (1242, "Hex High Entropy String"),
+                (1243, "Hex High Entropy String"),
+                (1244, "Hex High Entropy String"),
+                (1245, "Hex High Entropy String"),
+                (1246, "Hex High Entropy String"),
+                (1247, "Hex High Entropy String"),
+                (1248, "Hex High Entropy String"),
+                (1265, "Hex High Entropy String"),
+                (1266, "Hex High Entropy String"),
+                (1275, "Hex High Entropy String"),
+                (1292, "Hex High Entropy String"),
+                (1301, "Hex High Entropy String"),
+                (1325, "Hex High Entropy String"),
+            )
+        ),
+        "reason": "Reviewed file/log SHA-256 commitments and public repository Git commit IDs in the preserved Project 1 validation receipt; no credentials.",
+    },
+    "src/watchlist/ui/app.py": {
+        "file_sha256": "dde652b602c0691cb467c29b5bfded26bc9bea35e87ef136e4d0ddc90639325c",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset(((61, "Secret Keyword"),)),
+        "reason": "Internal Streamlit session-state dictionary key; not an authentication key. Rebound to the merged Project 1 source after review.",
+    },
+    "tests/test_llm_contracts.py": {
+        "file_sha256": "4240ce5a843ce27d7103db2ec7c939a7d20103bad76bb74b623954275684aba2",  # pragma: allowlist secret -- reviewed whole-file SHA256 only
+        "findings": frozenset(((149, "Secret Keyword"),)),
+        "reason": "Explicit test-key-not-real literal used to test rejection of provider credentials in config; rebound to merged tests after review.",
     },
 }
 

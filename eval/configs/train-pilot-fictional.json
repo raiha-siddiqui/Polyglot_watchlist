@@ -1,0 +1,35 @@
+{
+  "version": "train-pilot-fictional-v1",
+  "evidence": "Fictional generated names only; mechanics pilot, not a performance estimate.",
+  "data": {
+    "generator": "fictional-syllable-generator-v1",
+    "entity_count": 600,
+    "generator_seed": 42,
+    "split_seed": 42,
+    "max_positives_per_group": 6,
+    "hard_negatives_per_positive": 1,
+    "easy_negatives_per_positive": 1
+  },
+  "training": {
+    "objective": "mnrl",
+    "seed": 42,
+    "batch_size": 32,
+    "learning_rate": 0.01,
+    "scale": 20.0,
+    "use_hard_negatives": true,
+    "threads": 2,
+    "max_steps": 200,
+    "max_wall_seconds": 900.0,
+    "max_memory_mb": 4096,
+    "checkpoint_every": 50,
+    "model": {
+      "architecture": "char-ngram-bi-encoder-v1",
+      "buckets": 8192,
+      "dimension": 64,
+      "ngram_sizes": [2, 3, 4]
+    }
+  },
+  "output_dir": "data/models/derived-pilot/char-ngram-pilot-v1",
+  "selected_records_path": "data/eval-comparisons/completion-13-17/selected-records.json",
+  "protected_paths": ["data/models/e5-small", "data/models/mmarco-minilm"]
+}

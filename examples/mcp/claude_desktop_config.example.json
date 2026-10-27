@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "polyglot-watchlist-review": {
+      "command": "<ABSOLUTE_PATH_TO_VENV_PYTHON>",
+      "args": [
+        "-B",
+        "-m",
+        "watchlist.mcp_server",
+        "--transport",
+        "stdio",
+        "--workspace",
+        "<ABSOLUTE_PATH_TO_A_V2_WORKSPACE_DIRECTORY>",
+        "--config",
+        "<ABSOLUTE_PATH_TO_CHECKOUT>/config/review-v2.json",
+        "--origin",
+        "simulated_demo",
+        "--actor-label",
+        "<SHORT_LABEL>"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}

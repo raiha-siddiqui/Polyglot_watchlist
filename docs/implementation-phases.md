@@ -1,6 +1,6 @@
 # Implementation guide and approval gates
 
-Updated 2026-10-24 during approved Completion Step 06. This is the living status guide. Historical `docs/progress/phase-*.md` and completed `completion-*.md` reports remain unchanged records of what was authorized, executed and observed at the time.
+Updated 2026-10-24 during approved Completion Step 06; status lines refreshed 2026-10-27 in Completion Step 29 (see [Status after Completion Step 29](#status-after-completion-step-29)). This is the living status guide. Historical `docs/progress/phase-*.md` and completed `completion-*.md` reports remain unchanged records of what was authorized, executed and observed at the time.
 
 The [Project 1 proposal](reference/internship-2093-portfolio-plan.html) supplies the research ambition. The [completion plan](project-completion-plan.md) supplies the current dependency order and closure criteria. Neither document proves that a source license, model claim, free compute tier, SDK interface or deployment entitlement is current. Project 2 remains excluded.
 
@@ -15,7 +15,7 @@ The original Phase 0–10 sequence organized the first prototype. The later Comp
 | 4 | One pinned pretrained E5-small experiment using local exact search. |
 | 5A | One pretrained MiniLM reranking pilot on frozen E5 candidates; no project fine-tuning. |
 | 7A | Local LangGraph human-review pause/resume, saved evidence, deterministic explanations and audit. |
-| 5B/5C, 6, broader 8–10 | Training, calibration, long-term memory, interfaces and broader delivery remain unfinished; plans are not completion evidence. |
+| 5B/5C, 6, broader 8–10 | Real-data training, calibration and delivery remain unfinished. Fictional-only mechanics now exist for training/calibration (Completion Steps 13–17), memory (20–21) and local interfaces (24–27); see the Step 29 status table. Plans are not completion evidence. |
 
 The user-approved review workflow keeps E5 as the incumbent, MiniLM disabled in that path, and every successful retrieval subject to a human annotation. Research training/calibration are future work; automatic identity-match/clear decisions remain outside the current policy.
 
@@ -61,6 +61,30 @@ These are work packages in the current plan, not newly approved implementation o
 | 32 | Truthful report, error analysis, demonstration, learner explanation and separately approved release. |
 
 A capability blocked by source rights, compute, credentials or tenant access remains unfinished until its required evidence exists. It must retain an accountable resolution owner and a concrete next deliverable; “optional” wording or a limitation paragraph cannot substitute for work the completion plan requires. Final confirmation labels must remain unused until the approved freeze/confirmation step.
+
+## Status after Completion Step 29
+
+Status as of 2026-10-27. Every "mechanics" entry was run on fictional, authored or generated data only. Those entries are software-behaviour evidence, not matching-quality, calibration or reviewer-benefit results.
+
+| Completion steps | Status | Evidence |
+| --- | --- | --- |
+| 07 | Closed under the approved three-source feasibility scope. | [07 approved](progress/completion-07-approved.md) |
+| 08 | **Open.** Acquisition, readiness and the review hand-off are done. Genuine owner review and an accepted corpus release are BLOCKED. | [08B-02RC](progress/completion-08b-02rc.md), [SOLO-E](progress/completion-08-solo-e.md) |
+| 09 | **Not started** (BLOCKED on 08). | — |
+| 10–12 | Mechanics on fictional data: preprocessing, baselines, hybrid retrieval, vector index. Real-data runs are BLOCKED on 08/09. | [10](progress/completion-10.md), [11–12](progress/completion-11-12.md) |
+| 13, 17 | Mechanics: a bounded fictional training pilot, calibration and threshold selection. Real fitting is BLOCKED. | [13–17](progress/completion-13-17.md) |
+| 14–16 | **Not started** (BLOCKED on 08 and on verified local weights). | — |
+| 18 | Harness only, replay mode. The live comparison is BLOCKED on provider and budget approval. | [23](progress/completion-23.md) |
+| 19 | v2 review service implemented; the v1 migration and E5 parity items are still open. | [19](progress/completion-19.md) |
+| 20–21 | Exact-ID memory, outbox, lifecycle and backup implemented on fictional data. The items listed in that report remain BLOCKED. | [20–21](progress/completion-20-21.md) |
+| 22 | **Not started** (needs real reviewers). | — |
+| 23 | Offline mechanics complete. The live provider run is BLOCKED. | [23](progress/completion-23.md) |
+| 24–27 | API, UI, MCP and observability implemented on loopback with fictional data. External hosting, TLS, a real identity provider and a third-party MCP client are BLOCKED. | [24](progress/completion-24.md), [25](progress/completion-25.md), [26](progress/completion-26.md), [27](progress/completion-27.md) |
+| 28 | **Not started** (BLOCKED on 08/09/14–16). | — |
+| 29 | Partly done. Wiring, CI jobs, Makefile targets, container recipe, notices and the reproduction guide exist, and local Windows runs are recorded. The project code is MIT-licensed. The container build and hosted CI run are BLOCKED. | [29](progress/completion-29.md), [reproduction](reproduction.md) |
+| 30–32 | **Not started** (BLOCKED on approvals). | — |
+
+**Windows.** The v2 modules and the completion-step modules have run locally on Windows (CPython 3.14). The historical v1 agent still uses POSIX file locks and is not a Windows target.
 
 ## Working and teaching contract
 

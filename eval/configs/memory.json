@@ -1,0 +1,8 @@
+{
+  "eval_version": "case-memory-eval-v1",
+  "memory_config": "config/memory.json",
+  "review_config": "config/review-v2.json",
+  "fixture": "eval/fixtures/memory-episodes.json",
+  "workspace_id": "eval-fictional",
+  "notice": "Software evaluation of exact-ID memory on authored fictional episodes. Runs locally in temporary directories; no network, model or real data. Results measure link correctness and display rules, not reviewer benefit or matching quality."
+}

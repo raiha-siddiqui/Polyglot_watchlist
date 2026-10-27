@@ -35,3 +35,21 @@ data/review-archives/
 
 # Machine-bound genuine-review policies contain private owner declarations.
 config/corpus-solo-execution-v*.json
+
+# Step 29 fictional evaluation reruns and demo walkthroughs (generated output).
+data/eval-fictional/
+data/demo/
+
+# Local container secrets (only placeholders belong in the repository).
+deploy/secrets/
+
+# Defence in depth for local ledgers and older runbook output locations.
+*.sqlite
+*.sqlite-*
+/backups/
+/anchors/
+data/review-v2*/
+data/restored-*/
+# Relative overrides from a subdirectory must not stage generated demo data.
+**/data/demo/
+**/data/eval-fictional/

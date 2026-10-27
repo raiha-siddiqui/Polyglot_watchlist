@@ -1,0 +1,8 @@
+{
+  "usage": "Fictional synthetic corpus and deterministic hashed encoder: index mechanics only, not real-data or model evidence.",
+  "corpus": {"generator": "synthetic-scale-v1", "entity_count": 5000, "seed": 42},
+  "encoder": {"kind": "hashed-char-ngram-v1", "dimension": 256, "ngram_range": [2, 3]},
+  "hnsw": {"connectivity": 16, "expansion_add": 128, "expansion_search": 64},
+  "recall_k": [10, 50],
+  "query_count": 500
+}

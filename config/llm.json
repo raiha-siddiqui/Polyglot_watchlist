@@ -1,0 +1,43 @@
+{
+  "schema_version": "llm-config-v1",
+  "provider": "anthropic",
+  "model": "claude-opus-5-5",
+  "effort": "low",
+  "api_key_env": "ANTHROPIC_API_KEY",
+  "timeout_seconds": 60,
+  "max_retries": 0,
+  "max_requests_per_run": 0,
+  "max_input_chars": 1000,
+  "max_request_chars": 16000,
+  "max_output_chars": 20000,
+  "max_output_tokens": {
+    "parse": 4096,
+    "explain": 8192,
+    "judge": 4096
+  },
+  "pricing_usd_per_mtok": {
+    "input": 4.0,
+    "output": 20.0,
+    "basis": "Cached list price for claude-opus-5-5 as of 2026-10-06; must be re-verified against the provider before any approved run. Computed cost is an estimate, not an invoice."
+  },
+  "live_enabled": false,
+  "approval": {
+    "provider_approved": false,
+    "data_transfer_approved": false,
+    "retention_approved": false,
+    "budget_usd": null,
+    "approved_by": null,
+    "approved_at": null,
+    "transmitted_fields": [
+      "free-text request (parsing only)",
+      "candidate entity_id, display_name, entity_type, rank, similarity_score, score_kind",
+      "matched alias id and text, evidence_id, alias source and synthetic flag, provenance snapshot_id and dataset"
+    ]
+  },
+  "notes": [
+    "Live provider calls are BLOCKED until the owner sets every approval field, a positive budget, max_requests_per_run and live_enabled, and passes an explicit allow-live flag.",
+    "No tool use, no streaming, no server-side refusal fallback: a fallback model would silently change the compared model. A refusal is recorded and the deterministic path is used.",
+    "The API key is read only from the environment variable named in api_key_env and is never logged or stored in receipts.",
+    "Before every call the client refuses a rendered request longer than max_request_chars and any call whose worst-case cost (UTF-8 bytes of the request + 64 input tokens, plus capped max_tokens, at the listed prices) would take spending past budget_usd. The worst case is charged up front and replaced by reported usage."
+  ]
+}

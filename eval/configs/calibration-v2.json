@@ -1,0 +1,11 @@
+{
+  "version": "calibration-v2",
+  "rows_path": "data/eval-comparisons/completion-13-17/selected-records.json",
+  "output_dir": "data/eval-comparisons/completion-13-17/calibration",
+  "method": "platt",
+  "alternatives": ["isotonic"],
+  "min_class_count": 5,
+  "n_bins": 10,
+  "source_bundle": "data/models/derived-pilot/char-ngram-pilot-v1/artifact",
+  "evidence": "Fictional generated names and a tiny in-repo model; calibration mechanics only."
+}

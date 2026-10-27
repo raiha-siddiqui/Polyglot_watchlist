@@ -1,0 +1,2546 @@
+{
+  "components": {
+    "schemas": {
+      "AcceptedReviewModel": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "submission": {
+            "$ref": "#/components/schemas/ReviewSubmissionModel"
+          },
+          "submission_schema": {
+            "title": "Submission Schema",
+            "type": "string"
+          },
+          "submitted_at": {
+            "title": "Submitted At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "submission_schema",
+          "case_id",
+          "submitted_at",
+          "submission"
+        ],
+        "title": "AcceptedReviewModel",
+        "type": "object"
+      },
+      "AliasEvidenceModel": {
+        "additionalProperties": false,
+        "properties": {
+          "alias_id": {
+            "title": "Alias Id",
+            "type": "string"
+          },
+          "attribution": {
+            "title": "Attribution",
+            "type": "string"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "evidence_id": {
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "original_text": {
+            "title": "Original Text",
+            "type": "string"
+          },
+          "provenance": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "entity_id",
+          "alias_id",
+          "original_text",
+          "source",
+          "synthetic",
+          "attribution",
+          "provenance"
+        ],
+        "title": "AliasEvidenceModel",
+        "type": "object"
+      },
+      "AuditEventModel": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "event_sha256": {
+            "title": "Event Sha256",
+            "type": "string"
+          },
+          "event_type": {
+            "title": "Event Type",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "previous_sha256": {
+            "title": "Previous Sha256",
+            "type": "string"
+          },
+          "sequence": {
+            "title": "Sequence",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "case_id",
+          "sequence",
+          "event_type",
+          "payload",
+          "created_at",
+          "previous_sha256",
+          "event_sha256"
+        ],
+        "title": "AuditEventModel",
+        "type": "object"
+      },
+      "AuditReceiptModel": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "event_sha256": {
+            "title": "Event Sha256",
+            "type": "string"
+          },
+          "sequence": {
+            "title": "Sequence",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "case_id",
+          "sequence",
+          "event_sha256"
+        ],
+        "title": "AuditReceiptModel",
+        "type": "object"
+      },
+      "AuditResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "audit": {
+            "$ref": "#/components/schemas/AuditViewModel"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "audit",
+          "limitation"
+        ],
+        "title": "AuditResponse",
+        "type": "object"
+      },
+      "AuditVerificationModel": {
+        "additionalProperties": false,
+        "properties": {
+          "anchor_checked": {
+            "title": "Anchor Checked",
+            "type": "boolean"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "head_sha256": {
+            "title": "Head Sha256",
+            "type": "string"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "case_id",
+          "ok",
+          "count",
+          "head_sha256",
+          "anchor_checked",
+          "issues"
+        ],
+        "title": "AuditVerificationModel",
+        "type": "object"
+      },
+      "AuditViewModel": {
+        "additionalProperties": false,
+        "properties": {
+          "audit_schema": {
+            "title": "Audit Schema",
+            "type": "string"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEventModel"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "head_sha256": {
+            "title": "Head Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "audit_schema",
+          "case_id",
+          "count",
+          "head_sha256",
+          "events"
+        ],
+        "title": "AuditViewModel",
+        "type": "object"
+      },
+      "CancelRequest": {
+        "additionalProperties": false,
+        "description": "Cancel a case before any review is accepted (not a review outcome).",
+        "properties": {
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "CancelRequest",
+        "type": "object"
+      },
+      "CancellationModel": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "title": "Actor",
+            "type": "string"
+          },
+          "cancelled_at": {
+            "title": "Cancelled At",
+            "type": "string"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_id",
+          "actor",
+          "reason",
+          "cancelled_at"
+        ],
+        "title": "CancellationModel",
+        "type": "object"
+      },
+      "CandidateModel": {
+        "additionalProperties": false,
+        "description": "A possible record match; ``score`` is raw similarity, not a probability.",
+        "properties": {
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "matched_alias": {
+            "title": "Matched Alias",
+            "type": "string"
+          },
+          "matched_alias_id": {
+            "title": "Matched Alias Id",
+            "type": "string"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "score_kind": {
+            "title": "Score Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rank",
+          "entity_id",
+          "display_name",
+          "entity_type",
+          "matched_alias_id",
+          "matched_alias",
+          "score",
+          "score_kind",
+          "evidence_ids"
+        ],
+        "title": "CandidateModel",
+        "type": "object"
+      },
+      "CaseHeaderModel": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "title": "Actor",
+            "type": "string"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "case_schema": {
+            "title": "Case Schema",
+            "type": "string"
+          },
+          "context_providers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Context Providers",
+            "type": "array"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "normalized_name": {
+            "title": "Normalized Name",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "human",
+              "simulated_demo",
+              "test",
+              "unknown"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "packet_schema": {
+            "title": "Packet Schema",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          },
+          "retriever": {
+            "$ref": "#/components/schemas/RetrieverDescriptorModel"
+          },
+          "thread_id": {
+            "title": "Thread Id",
+            "type": "string"
+          },
+          "workflow": {
+            "$ref": "#/components/schemas/WorkflowIdentityModel"
+          }
+        },
+        "required": [
+          "case_schema",
+          "case_id",
+          "thread_id",
+          "request_id",
+          "created_at",
+          "origin",
+          "actor",
+          "name",
+          "normalized_name",
+          "workflow",
+          "packet_schema",
+          "retriever",
+          "context_providers"
+        ],
+        "title": "CaseHeaderModel",
+        "type": "object"
+      },
+      "CaseListResponse": {
+        "additionalProperties": false,
+        "description": "A catalogue page without names, evidence or notes.",
+        "properties": {
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/CaseSummaryModel"
+            },
+            "title": "Cases",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          },
+          "next_offset": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Offset"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "cases",
+          "limit",
+          "offset",
+          "next_offset",
+          "limitation"
+        ],
+        "title": "CaseListResponse",
+        "type": "object"
+      },
+      "CaseResponse": {
+        "additionalProperties": false,
+        "description": "One case. ``revision`` is an opaque token (SHA-256 of the case view).",
+        "properties": {
+          "case": {
+            "$ref": "#/components/schemas/CaseViewModel"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case",
+          "revision",
+          "limitation"
+        ],
+        "title": "CaseResponse",
+        "type": "object"
+      },
+      "CaseSummaryModel": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "compatible": {
+            "title": "Compatible",
+            "type": "boolean"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "next_action": {
+            "title": "Next Action",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "human",
+              "simulated_demo",
+              "test",
+              "unknown"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "recovery_required": {
+            "title": "Recovery Required",
+            "type": "boolean"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "workflow_version": {
+            "title": "Workflow Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_id",
+          "created_at",
+          "origin",
+          "status",
+          "next_action",
+          "recovery_required",
+          "compatible",
+          "workflow_version"
+        ],
+        "title": "CaseSummaryModel",
+        "type": "object"
+      },
+      "CaseViewModel": {
+        "additionalProperties": false,
+        "properties": {
+          "cancellation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CancellationModel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "compatibility_issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Compatibility Issues",
+            "type": "array"
+          },
+          "compatible": {
+            "title": "Compatible",
+            "type": "boolean"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExplanationModel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "final_receipt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AuditReceiptModel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "header": {
+            "$ref": "#/components/schemas/CaseHeaderModel"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          },
+          "next_action": {
+            "enum": [
+              "submit_review",
+              "recover",
+              "none"
+            ],
+            "title": "Next Action",
+            "type": "string"
+          },
+          "packet": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewPacketModel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "packet_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Packet Sha256"
+          },
+          "recovery_required": {
+            "title": "Recovery Required",
+            "type": "boolean"
+          },
+          "review": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AcceptedReviewModel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "preparing",
+              "awaiting_review",
+              "finalizing",
+              "completed",
+              "cancelled",
+              "incompatible",
+              "inconsistent"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_id",
+          "status",
+          "next_action",
+          "recovery_required",
+          "compatible",
+          "compatibility_issues",
+          "issues",
+          "header",
+          "packet",
+          "packet_sha256",
+          "review",
+          "explanation",
+          "final_receipt",
+          "cancellation",
+          "limitation"
+        ],
+        "title": "CaseViewModel",
+        "type": "object"
+      },
+      "EntityAliasModel": {
+        "additionalProperties": false,
+        "properties": {
+          "alias_id": {
+            "title": "Alias Id",
+            "type": "string"
+          },
+          "evidence_id": {
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "alias_id",
+          "name",
+          "evidence_id"
+        ],
+        "title": "EntityAliasModel",
+        "type": "object"
+      },
+      "EntityModel": {
+        "additionalProperties": false,
+        "description": "A fictional reference record; a shared name does not establish identity.",
+        "properties": {
+          "aliases": {
+            "items": {
+              "$ref": "#/components/schemas/EntityAliasModel"
+            },
+            "title": "Aliases",
+            "type": "array"
+          },
+          "attribution": {
+            "title": "Attribution",
+            "type": "string"
+          },
+          "dataset": {
+            "title": "Dataset",
+            "type": "string"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "provenance": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance"
+          },
+          "reference_sha256": {
+            "title": "Reference Sha256",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "entity_id",
+          "name",
+          "entity_type",
+          "synthetic",
+          "source",
+          "attribution",
+          "aliases",
+          "provenance",
+          "dataset",
+          "reference_sha256"
+        ],
+        "title": "EntityModel",
+        "type": "object"
+      },
+      "EntityResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "entity": {
+            "$ref": "#/components/schemas/EntityModel"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity",
+          "limitation"
+        ],
+        "title": "EntityResponse",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "description": "Every error: a stable ``code``, readable ``message``, ``retryable`` and ``details``.",
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable",
+          "details"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "ExplanationModel": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          },
+          "template_version": {
+            "title": "Template Version",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "template_version",
+          "text",
+          "evidence_ids",
+          "limitation"
+        ],
+        "title": "ExplanationModel",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "api_version": {
+            "title": "Api Version",
+            "type": "string"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          },
+          "research_only": {
+            "title": "Research Only",
+            "type": "boolean"
+          },
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "api_version",
+          "research_only",
+          "limitation"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "RetrievalResultModel": {
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateModel"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/AliasEvidenceModel"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "retriever": {
+            "$ref": "#/components/schemas/RetrieverDescriptorModel"
+          },
+          "top_k": {
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "retriever",
+          "top_k",
+          "candidates",
+          "evidence"
+        ],
+        "title": "RetrievalResultModel",
+        "type": "object"
+      },
+      "RetrieverDescriptorModel": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "reference_sha256": {
+            "title": "Reference Sha256",
+            "type": "string"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "title": "Settings",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "version",
+          "reference_sha256",
+          "settings"
+        ],
+        "title": "RetrieverDescriptorModel",
+        "type": "object"
+      },
+      "ReviewPacketModel": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "title": "Context",
+            "type": "object"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "normalized_name": {
+            "title": "Normalized Name",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "human",
+              "simulated_demo",
+              "test",
+              "unknown"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "packet_schema": {
+            "title": "Packet Schema",
+            "type": "string"
+          },
+          "retrieval": {
+            "$ref": "#/components/schemas/RetrievalResultModel"
+          },
+          "workflow": {
+            "$ref": "#/components/schemas/WorkflowIdentityModel"
+          }
+        },
+        "required": [
+          "packet_schema",
+          "case_id",
+          "workflow",
+          "origin",
+          "name",
+          "normalized_name",
+          "retrieval",
+          "context",
+          "limitation"
+        ],
+        "title": "ReviewPacketModel",
+        "type": "object"
+      },
+      "ReviewRequest": {
+        "additionalProperties": false,
+        "description": "One human review form, bound to the exact case revision and packet seen.",
+        "properties": {
+          "candidate_entity_id": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Required for candidate_for_follow_up; null otherwise.",
+            "title": "Candidate Entity Id"
+          },
+          "outcome": {
+            "enum": [
+              "candidate_for_follow_up",
+              "none_selected",
+              "unresolved"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "packet_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Packet Sha256",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "revision": {
+            "description": "The `revision` of the case response the reviewer looked at.",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Revision",
+            "type": "string"
+          },
+          "submission_id": {
+            "description": "Client UUID that makes retries idempotent.",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Submission Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "submission_id",
+          "revision",
+          "packet_sha256",
+          "outcome",
+          "candidate_entity_id",
+          "reason"
+        ],
+        "title": "ReviewRequest",
+        "type": "object"
+      },
+      "ReviewSubmissionModel": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "title": "Actor",
+            "type": "string"
+          },
+          "candidate_entity_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Entity Id"
+          },
+          "origin": {
+            "enum": [
+              "human",
+              "simulated_demo",
+              "test",
+              "unknown"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "candidate_for_follow_up",
+              "none_selected",
+              "unresolved"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "packet_sha256": {
+            "title": "Packet Sha256",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "submission_id": {
+            "title": "Submission Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "submission_id",
+          "packet_sha256",
+          "outcome",
+          "candidate_entity_id",
+          "reason",
+          "actor",
+          "origin"
+        ],
+        "title": "ReviewSubmissionModel",
+        "type": "object"
+      },
+      "StartCaseRequest": {
+        "additionalProperties": false,
+        "description": "Start a screening case for one name. Send ``request_id`` so retries are safe.",
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "human",
+              "simulated_demo",
+              "test",
+              "unknown"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Client UUID (lowercase, hyphenated); a retry with the same request returns the same case instead of creating a duplicate.",
+            "title": "Request Id"
+          }
+        },
+        "required": [
+          "name",
+          "origin"
+        ],
+        "title": "StartCaseRequest",
+        "type": "object"
+      },
+      "VerificationResponse": {
+        "additionalProperties": false,
+        "description": "Local tamper-evidence check; ``ok`` is not authentication.",
+        "properties": {
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/AuditVerificationModel"
+          }
+        },
+        "required": [
+          "verification",
+          "limitation"
+        ],
+        "title": "VerificationResponse",
+        "type": "object"
+      },
+      "WorkflowIdentityModel": {
+        "additionalProperties": false,
+        "properties": {
+          "config_sha256": {
+            "title": "Config Sha256",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "config_sha256"
+        ],
+        "title": "WorkflowIdentityModel",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "ApiKey": {
+        "description": "Bearer API key issued by the operator; its actor label is the attributed identity for every write.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Research-only prototype over fictional data. Possible record matches for research and human review only. Similarity scores are not identity probabilities. Names and this reference snapshot cannot establish identity, wrongdoing or sanctions status; selecting none is not a clearance. The actor label is supplied by the calling interface and is not authentication. Review outcomes are only candidate_for_follow_up, none_selected or unresolved, recorded by an authenticated human reviewer.",
+    "title": "Polyglot Watchlist review API (research only)",
+    "version": "review-api-v2.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "description": "Liveness only; needs no key and reveals no workspace details.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/v2/cases": {
+      "get": {
+        "description": "Catalogue page in creation order (no names, evidence or notes).",
+        "operationId": "list_cases_v2_cases_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 1000000000,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "origin",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "human",
+                    "simulated_demo",
+                    "test",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Origin"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Role does not permit this operation"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown case, record or route"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stale, duplicate, conflicting or not-allowed-now request"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request body larger than the limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid input"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Write queue is full; retry later"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal error (no details are returned)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Workspace busy or a component unavailable; retry later"
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "summary": "List Cases",
+        "tags": [
+          "cases"
+        ]
+      },
+      "post": {
+        "description": "Start a screening case and stop at the human-review step.\n\nReturns possible record matches for review, never a decision. The\ncase creator is the API key's actor label.",
+        "operationId": "start_case_v2_cases_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartCaseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Role does not permit this operation"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown case, record or route"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stale, duplicate, conflicting or not-allowed-now request"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request body larger than the limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid input"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Write queue is full; retry later"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal error (no details are returned)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Workspace busy or a component unavailable; retry later"
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "summary": "Start Case",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/v2/cases/{case_id}": {
+      "get": {
+        "description": "One case with its packet, review, explanation and status.",
+        "operationId": "get_case_v2_cases__case_id__get",
+        "parameters": [
+          {
+            "description": "Case UUID",
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "description": "Case UUID",
+              "maxLength": 64,
+              "title": "Case Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Role does not permit this operation"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown case, record or route"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stale, duplicate, conflicting or not-allowed-now request"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request body larger than the limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid input"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Write queue is full; retry later"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal error (no details are returned)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Workspace busy or a component unavailable; retry later"
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "summary": "Get Case",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/v2/cases/{case_id}/audit": {
+      "get": {
+        "description": "Every hash-chained audit event of a case.",
+        "operationId": "audit_v2_cases__case_id__audit_get",
+        "parameters": [
+          {
+            "description": "Case UUID",
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "description": "Case UUID",
+              "maxLength": 64,
+              "title": "Case Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Role does not permit this operation"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown case, record or route"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stale, duplicate, conflicting or not-allowed-now request"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request body larger than the limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid input"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Write queue is full; retry later"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal error (no details are returned)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Workspace busy or a component unavailable; retry later"
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "summary": "Audit",
+        "tags": [
+          "audit"
+        ]
+      }
+    },
+    "/v2/cases/{case_id}/audit/verify": {
+      "get": {
+        "description": "Local tamper-evidence check, optionally against an anchor kept elsewhere.",
+        "operationId": "verify_audit_v2_cases__case_id__audit_verify_get",
+        "parameters": [
+          {
+            "description": "Case UUID",
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "description": "Case UUID",
+              "maxLength": 64,
+              "title": "Case Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "anchor_count",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 1000000000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Anchor Count"
+            }
+          },
+          {
+            "in": "query",
+            "name": "anchor_head_sha256",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Anchor Head Sha256"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Role does not permit this operation"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown case, record or route"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stale, duplicate, conflicting or not-allowed-now request"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request body larger than the limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid input"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Write queue is full; retry later"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal error (no details are returned)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Workspace busy or a component unavailable; retry later"
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "summary": "Verify Audit",
+        "tags": [
+          "audit"
+        ]
+      }
+    },
+    "/v2/cases/{case_id}/cancel": {
+      "post": {
+        "description": "Cancel before any review is accepted; cancellation is not an outcome.",
+        "operationId": "cancel_v2_cases__case_id__cancel_post",
+        "parameters": [
+          {
+            "description": "Case UUID",
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "description": "Case UUID",
+              "maxLength": 64,
+              "title": "Case Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Role does not permit this operation"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown case, record or route"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stale, duplicate, conflicting or not-allowed-now request"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request body larger than the limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid input"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Write queue is full; retry later"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal error (no details are returned)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Workspace busy or a component unavailable; retry later"
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "summary": "Cancel",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/v2/cases/{case_id}/recover": {
+      "post": {
+        "description": "Finish interrupted work from durable state; never invents a review.",
+        "operationId": "recover_v2_cases__case_id__recover_post",
+        "parameters": [
+          {
+            "description": "Case UUID",
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "description": "Case UUID",
+              "maxLength": 64,
+              "title": "Case Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Role does not permit this operation"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown case, record or route"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stale, duplicate, conflicting or not-allowed-now request"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request body larger than the limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid input"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Write queue is full; retry later"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal error (no details are returned)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Workspace busy or a component unavailable; retry later"
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "summary": "Recover",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/v2/cases/{case_id}/review": {
+      "post": {
+        "description": "Record one human review. Retrying the same ``submission_id`` is safe.\n\n``revision`` and ``packet_sha256`` must match what the reviewer saw;\notherwise the form is stale (409). The reviewer is the key's actor and\nthe origin is the case's own origin.",
+        "operationId": "submit_review_v2_cases__case_id__review_post",
+        "parameters": [
+          {
+            "description": "Case UUID",
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "description": "Case UUID",
+              "maxLength": 64,
+              "title": "Case Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Role does not permit this operation"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown case, record or route"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stale, duplicate, conflicting or not-allowed-now request"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request body larger than the limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid input"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Write queue is full; retry later"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal error (no details are returned)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Workspace busy or a component unavailable; retry later"
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "summary": "Submit Review",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/v2/entities/{entity_id}": {
+      "get": {
+        "description": "A fictional reference record with aliases and provenance (if any).",
+        "operationId": "get_entity_v2_entities__entity_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "title": "Entity Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Role does not permit this operation"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown case, record or route"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stale, duplicate, conflicting or not-allowed-now request"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request body larger than the limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid input"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Write queue is full; retry later"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal error (no details are returned)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Workspace busy or a component unavailable; retry later"
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "summary": "Get Entity",
+        "tags": [
+          "reference"
+        ]
+      }
+    }
+  }
+}

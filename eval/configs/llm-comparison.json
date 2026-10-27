@@ -1,0 +1,35 @@
+{
+  "schema_version": "llm-comparison-v1",
+  "llm_config": "config/llm.json",
+  "partition": "fictional-regression-only",
+  "reference": "packaged-synthetic-v1",
+  "retriever": "rapidfuzz-baseline",
+  "top_k": 5,
+  "include_baseline_scores": false,
+  "shortlist_order": "entity_id",
+  "max_cases": 50,
+  "live": {
+    "enabled": false,
+    "approved_partition": null
+  },
+  "notes": [
+    "Fictional regression cases only. They exercise harness mechanics and cannot complete the Step 18 experiment, which needs the frozen development protocol from Step 09/16 and an approved provider run.",
+    "The LLM judge receives the same shortlist the retriever produced (equal evidence), ordered by entity_id, with each record's display name and all aliases in alias_id order, and without baseline scores or the baseline's chosen alias, so baseline rank is not leaked. Retrieval misses are counted separately.",
+    "partition must be allowed for the reference set; packaged-synthetic-v1 allows only fictional-regression-only, and every report over it is regression_only. A live run also needs live.approved_partition equal to partition.",
+    "target_entity_ids lists every fictional record sharing the intended name; an empty list marks an absent query."
+  ],
+  "queries": [
+    {"query_id": "fx-01", "text": "Luma Vespr", "target_entity_ids": ["syn-001", "syn-012"]},
+    {"query_id": "fx-02", "text": "Lumo Vespa", "target_entity_ids": ["syn-002"]},
+    {"query_id": "fx-03", "text": "Elo Nivarra", "target_entity_ids": ["syn-003"]},
+    {"query_id": "fx-04", "text": "Aster Quil Workshop", "target_entity_ids": ["syn-004"]},
+    {"query_id": "fx-05", "text": "Мира Велуне", "target_entity_ids": ["syn-005"]},
+    {"query_id": "fx-06", "text": "Naro Zephir", "target_entity_ids": ["syn-006"]},
+    {"query_id": "fx-07", "text": "Sira Lumin", "target_entity_ids": ["syn-007"]},
+    {"query_id": "fx-08", "text": "Daro Nuvemm", "target_entity_ids": ["syn-008"]},
+    {"query_id": "fx-09", "text": "Coper Kite Guild", "target_entity_ids": ["syn-009"]},
+    {"query_id": "fx-10", "text": "Moonbery Loom", "target_entity_ids": ["syn-010"]},
+    {"query_id": "fx-11", "text": "Tavi Orlunn", "target_entity_ids": ["syn-011"]},
+    {"query_id": "fx-12", "text": "Quorin Batel", "target_entity_ids": []}
+  ]
+}

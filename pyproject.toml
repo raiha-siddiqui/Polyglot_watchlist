@@ -5,8 +5,10 @@ build-backend = "hatchling.build"
 [project]
 name = "polyglot-watchlist"
 version = "0.1.0"
-description = "Research-only fictional name-matching baseline"
+description = "Research-only multilingual name matching with human review"
 requires-python = ">=3.14,<3.15"
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = ["rapidfuzz>=3.14,<4"]
 
 [project.optional-dependencies]
@@ -14,11 +16,33 @@ agent = [
     "langgraph==1.2.16",
     "langgraph-checkpoint==4.3.0",
     "langgraph-checkpoint-sqlite==3.1.2",
+    "portalocker==4.4.1",
 ]
 embeddings = [
     "numpy>=2.4.6",
     "sentence-transformers>=6.1.0",
     "torch>=2.14.1",
+]
+preprocessing = [
+    "anyascii==0.3.3",
+    "jellyfish>=1.3,<2",
+]
+index = [
+    "usearch>=2.26,<3",
+]
+api = [
+    "fastapi>=0.162,<0.163",
+    "httpx>=0.28,<0.29",
+    "uvicorn>=0.54,<0.55",
+]
+ui = [
+    "streamlit>=1.66,<1.67",
+]
+mcp = [
+    "mcp>=2.3,<2.4",
+]
+llm = [
+    "anthropic>=0.80",
 ]
 
 [dependency-groups]
@@ -31,7 +55,7 @@ packages = ["src/watchlist"]
 [tool.hatch.build.targets.sdist]
 # The source distribution rebuilds the package without redistributing datasets,
 # model weights, historical evidence, or local environments from this checkout.
-include = ["/src/watchlist", "/pyproject.toml", "/README.md", "/uv.lock"]
+include = ["/src/watchlist", "/pyproject.toml", "/README.md", "/uv.lock", "/LICENSE"]
 
 [tool.uv]
 required-version = "==0.13.5"
@@ -60,11 +84,128 @@ include = [
     "tests/test_resource_guard.py",
     "tests/test_wikidata_api.py",
     "tests/test_metadata_preflight.py",
+    "tests/conftest.py",
+    "tests/test_private_evidence.py",
+    "src/watchlist/baselines.py",
+    "src/watchlist/calibration.py",
+    "src/watchlist/evaluate_baselines.py",
+    "src/watchlist/evaluate_policy.py",
+    "src/watchlist/hybrid_retrieval.py",
+    "src/watchlist/llm/__init__.py",
+    "src/watchlist/llm/client.py",
+    "src/watchlist/llm/comparison.py",
+    "src/watchlist/llm/explanations.py",
+    "src/watchlist/llm/parsing.py",
+    "src/watchlist/llm/prompts.py",
+    "src/watchlist/llm/schemas.py",
+    "src/watchlist/llm/validation.py",
+    "src/watchlist/model_artifacts.py",
+    "src/watchlist/preprocessing.py",
+    "src/watchlist/reconciliation.py",
+    "src/watchlist/review/cli.py",
+    "src/watchlist/review/contracts.py",
+    "src/watchlist/review/public_errors.py",
+    "src/watchlist/review/locking.py",
+    "src/watchlist/review/nodes.py",
+    "src/watchlist/review/recovery.py",
+    "src/watchlist/review/service.py",
+    "src/watchlist/review/storage.py",
+    "src/watchlist/review/validation.py",
+    "src/watchlist/review/workflow.py",
+    "src/watchlist/review_policy.py",
+    "src/watchlist/structured_input.py",
+    "src/watchlist/synthetic_corpus.py",
+    "src/watchlist/training.py",
+    "src/watchlist/training_data.py",
+    "src/watchlist/training_losses.py",
+    "src/watchlist/vector_index.py",
+    "tests/review_v2_support.py",
+    "tests/test_baselines.py",
+    "tests/test_calibration.py",
+    "tests/test_explanation_grounding.py",
+    "tests/test_hybrid_retrieval.py",
+    "tests/test_llm_comparison.py",
+    "tests/test_llm_contracts.py",
+    "tests/test_model_artifacts.py",
+    "tests/test_preprocessing.py",
+    "tests/test_prompt_injection.py",
+    "tests/test_reconciliation.py",
+    "tests/test_review_policy.py",
+    "tests/test_review_v2_cli.py",
+    "tests/test_review_v2_concurrency.py",
+    "tests/test_review_v2_contracts.py",
+    "tests/test_review_v2_portability.py",
+    "tests/test_review_v2_recovery.py",
+    "tests/test_review_v2_service.py",
+    "tests/test_structured_input.py",
+    "tests/test_synthetic_corpus.py",
+    "tests/test_training.py",
+    "tests/test_training_data.py",
+    "tests/test_training_losses.py",
+    "tests/test_vector_index.py",
+    "scripts/eval_fictional.py",
+    "scripts/load_smoke.py",
+    "src/watchlist/api/__init__.py",
+    "src/watchlist/api/__main__.py",
+    "src/watchlist/api/app.py",
+    "src/watchlist/api/auth.py",
+    "src/watchlist/api/errors.py",
+    "src/watchlist/api/schemas.py",
+    "src/watchlist/api/settings.py",
+    "src/watchlist/case_memory/__init__.py",
+    "src/watchlist/case_memory/evaluation.py",
+    "src/watchlist/case_memory/identifiers.py",
+    "src/watchlist/case_memory/lifecycle.py",
+    "src/watchlist/case_memory/lookup.py",
+    "src/watchlist/case_memory/provider.py",
+    "src/watchlist/case_memory/publisher.py",
+    "src/watchlist/case_memory/state.py",
+    "src/watchlist/case_memory/store.py",
+    "src/watchlist/mcp_server/__init__.py",
+    "src/watchlist/mcp_server/__main__.py",
+    "src/watchlist/mcp_server/auth.py",
+    "src/watchlist/mcp_server/server.py",
+    "src/watchlist/mcp_server/tools.py",
+    "src/watchlist/observability.py",
+    "src/watchlist/review/backup.py",
+    "src/watchlist/review/retention.py",
+    "src/watchlist/stack.py",
+    "src/watchlist/ui/__init__.py",
+    "src/watchlist/ui/app.py",
+    "src/watchlist/ui/client.py",
+    "src/watchlist/ui/components.py",
+    "tests/test_api.py",
+    "tests/test_api_auth.py",
+    "tests/test_api_concurrency.py",
+    "tests/test_case_memory_evaluation.py",
+    "tests/test_case_memory_identifiers.py",
+    "tests/test_case_memory_lifecycle.py",
+    "tests/test_case_memory_provider.py",
+    "tests/test_case_memory_publisher.py",
+    "tests/test_case_memory_store.py",
+    "tests/test_case_memory_support.py",
+    "tests/test_integration_v2_stack.py",
+    "tests/test_load_failure.py",
+    "tests/test_mcp_server.py",
+    "tests/test_mcp_stdio.py",
+    "tests/test_mcp_tools.py",
+    "tests/test_observability.py",
+    "tests/test_review_backup.py",
+    "tests/test_review_retention.py",
+    "tests/test_security_hardening.py",
+    "tests/test_ui_app.py",
+    "tests/test_ui_client.py",
+    "tests/test_ui_components.py",
+    "tests/test_ui_support.py",
 ]
 force-exclude = true
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+# Optional-dependency tests call pytest.importorskip before importing project code.
+"tests/*" = ["E402"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

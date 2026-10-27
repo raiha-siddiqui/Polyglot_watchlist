@@ -1,0 +1,34 @@
+{
+  "config_version": "case-memory-config-v1",
+  "policy": {
+    "cards_per_candidate": 3,
+    "visibility_days": 90,
+    "page_max": 50,
+    "display_origins": {
+      "human": ["human"],
+      "simulated_demo": ["human", "simulated_demo"],
+      "test": ["human", "simulated_demo", "test"],
+      "unknown": []
+    }
+  },
+  "retention": {
+    "annotation_retention_days": 365,
+    "backup_retention_days": 30
+  },
+  "namespaces": [
+    {
+      "namespace_id": "fictional-synthetic-v1",
+      "sources": ["fictional-synthetic-v1"],
+      "fictional": true,
+      "description": "Packaged authored fictional entities (src/watchlist/data/synthetic_entities.json); no real persons or organizations."
+    }
+  ],
+  "snapshots": [
+    {
+      "snapshot_sha256": "c1804f29bf1f4fd1ac9c2e8a2173f161bfd71e31713c6e4cb75a41802a7fb004",
+      "namespace_id": "fictional-synthetic-v1",
+      "label": "Packaged fictional entities as digested by the v2 RapidFuzz adapter (watchlist.review.nodes.reference_digest)."
+    }
+  ],
+  "lock_timeout_seconds": 5.0
+}

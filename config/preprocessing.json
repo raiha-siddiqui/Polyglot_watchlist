@@ -1,0 +1,61 @@
+{
+  "config_version": "preprocessing-config-v1",
+  "default_profile": "v1-compatible",
+  "profiles": [
+    {
+      "name": "v1-compatible",
+      "version": "1",
+      "status": "control",
+      "max_output_length": 200,
+      "transforms": ["nfkc", "casefold", "whitespace"],
+      "description": "Byte-for-byte the existing normalize_name behaviour; the versioned control view."
+    },
+    {
+      "name": "punctuation-unified",
+      "version": "1",
+      "status": "experimental",
+      "max_output_length": 200,
+      "transforms": ["nfkc", "casefold", "unify_punctuation", "whitespace"],
+      "description": "Control plus hyphen, apostrophe and quotation-mark unification."
+    },
+    {
+      "name": "latin-diacritics-folded",
+      "version": "1",
+      "status": "experimental",
+      "max_output_length": 200,
+      "transforms": ["nfkc", "casefold", "unify_punctuation", "fold_latin_diacritics", "whitespace"],
+      "description": "Removes combining marks attached to Latin letters only; other scripts keep their marks."
+    },
+    {
+      "name": "latin-transliteration",
+      "version": "1",
+      "status": "experimental",
+      "max_output_length": 1600,
+      "transforms": ["nfkc", "unify_punctuation", "transliterate_anyascii", "casefold", "whitespace"],
+      "description": "Lossy anyascii romanization; a separately evaluated representation, never a replacement for the original."
+    }
+  ],
+  "designators": {
+    "rules_version": "designators-v2",
+    "categories": [
+      {
+        "category": "legal_form",
+        "entity_types": ["organization", "unknown"],
+        "edge_tokens": [
+          "llc", "ltd", "limited", "inc", "incorporated", "corp", "corporation", "co",
+          "plc", "llp", "lp", "gmbh", "ag", "kg", "sa", "sarl", "srl", "spa", "bv", "nv",
+          "pte", "pty", "jsc", "pjsc", "ojsc", "cjsc", "ooo", "oao", "zao", "pao", "ao",
+          "ооо", "оао", "зао", "пао", "ао", "тов",
+          "شركة", "مؤسسة", "ذمم", "شمم", "有限公司", "股份有限公司", "有限责任公司", "公司"
+        ],
+        "han_suffixes": ["股份有限公司", "有限责任公司", "有限公司", "公司"]
+      },
+      {
+        "category": "vessel_prefix",
+        "entity_types": ["vessel", "unknown"],
+        "edge_tokens": ["m/v", "mv", "m/t", "mt", "ss", "ms", "mfv", "fv"],
+        "han_suffixes": []
+      }
+    ]
+  }
+}

@@ -1077,6 +1077,10 @@ def test_file_change_during_read_is_rejected_even_when_content_is_identical(
 ):
     kwargs = inputs.save()
     original = inputs.selection_path.read_bytes()
+    # Same-byte writes can share one filesystem timestamp tick. Backdate the
+    # fixture so the injected rewrite always changes observable metadata.
+    before = inputs.selection_path.stat()
+    os.utime(inputs.selection_path, ns=(before.st_atime_ns, 0))
     identity = inputs.selection_path.stat().st_ino
     real_read = os.read
     modified = False
@@ -1094,6 +1098,8 @@ def test_file_change_during_read_is_rejected_even_when_content_is_identical(
         prepare_source(
             inputs.selection_path, inputs.receipt_path, inputs.permission_path, **kwargs
         )
+    assert modified
+    assert inputs.selection_path.read_bytes() == original
 
 
 def test_after_link_sync_failure_can_leave_only_a_fully_validated_artifact(

@@ -1,10 +1,78 @@
 # Polyglot Watchlist — research name matching
 
+> Companion project: **Follow the Money**, a research agent that traces blockchain payments and can resolve sanctioned-wallet owner names through this project's review service, lives in its own repository.
+
 A local multilingual candidate-retrieval prototype with a resumable human-review workflow. It suggests possible reference-record matches; it does not establish identity, wrongdoing, current sanctions status, or clearance. It is not a live screening/compliance service and is not affiliated with INTERPOL.
 
 The default demonstration uses invented names. All existing fictional, public-subset, and bilingual evaluation examples have been inspected and are **regression-only evidence**. A regression check asks whether software changes preserve expected behavior on known examples; it does not measure performance on unseen data.
 
 ## Current state
+
+> **Review follow-up (2026-10-27).** An independent adversarial review of the v2 stack fixed security and robustness issues: the reviewer UI now requires each reviewer to sign in with their own API key (no shared server token), Streamlit binds to loopback with restricted hosts, readiness and metrics need authentication, request IDs are server-generated, and error payloads no longer expose paths or SQLite details. Some figures reported in the step reports below could not be reproduced and were withdrawn. See [the review report](docs/progress/review-p1-final.md); where it disagrees with older text, it is current.
+
+**Updated in Completion Step 29 (2026-10-27).** On top of the earlier work there is now a **v2 stack, implemented and tested on fictional data only**:
+
+- one versioned review service, which every interface uses;
+- three thin interfaces over it: a REST API, a reviewer UI and MCP tools;
+- opt-in reviewer memory, which shows dated earlier annotations about exact record IDs;
+- mechanics for preprocessing, baselines, hybrid retrieval, training, calibration and a grounded LLM harness.
+
+No component makes an automatic match or clear decision. A human records `candidate_for_follow_up`, `none_selected` or `unresolved`, and every interface shows the research-only limitation notice. Real-data experiments, live LLM calls and hosting remain **blocked**; see [Blocked items](#blocked-items). The project code is released under the [MIT License](LICENSE). Exact test counts and commands are in the [Step 29 report](docs/progress/completion-29.md), and the [reproduction guide](docs/reproduction.md) gives the Linux/WSL and Windows commands.
+
+| v2 capability (fictional data) | Implemented behavior | Evidence |
+| --- | --- | --- |
+| Review service v2 | `watchlist.review.service.ReviewService`, the one backend for the CLI, API and MCP. It provides: typed versioned contracts, a LangGraph human-review interrupt, a hash-chained audit, portable locks, idempotent and stale-safe submissions, crash recovery and context-provider hooks. | [Step 19](docs/progress/completion-19.md), [ADR 0007](docs/adr/0007-review-service-v2.md) |
+| Reviewer memory | `watchlist.case_memory`, keyed by exact ID and snapshot only, never by name. It adds a replay-safe outbox, corrections, retention, and backup/restore with anchors. Its context is display-only and frozen into the packet digest. Opt-in through `--memory-store`/`--memory-config`. | [Steps 20–21](docs/progress/completion-20-21.md), [data lifecycle](docs/data-lifecycle.md) |
+| REST API | FastAPI on loopback only, with hashed bearer keys (viewer/reviewer) and structured errors. Writes go through a bounded queue, and the OpenAPI contract is in [`docs/openapi.json`](docs/openapi.json). | [Step 24](docs/progress/completion-24.md), [API guide](docs/api.md) |
+| Reviewer UI | Streamlit over the API. It shows escaped and bidirectional-safe evidence, a separate prior-annotation panel and audit verification. | [Step 25](docs/progress/completion-25.md), [reviewer guide](docs/reviewer-guide.md) |
+| MCP tools | stdio server with `screen_name`, `get_case`, `list_cases`, `get_entity`, `get_audit` and `verify_audit`. There is deliberately no tool that submits a review. | [Step 26](docs/progress/completion-26.md), [MCP guide](docs/mcp.md) |
+| Operations and hardening | Readiness and metrics, redacted JSON logs and traces, body and in-flight limits, runbooks, and a threat model. | [Step 27](docs/progress/completion-27.md), [operations](docs/operations.md), [threat model](docs/threat-model.md) |
+| Preprocessing and baselines | Traced script/transliteration profiles, structured input and evidence reconciliation. The baseline matrix, hybrid RRF and a USearch HNSW index are compared with exact search. | [Step 10](docs/progress/completion-10.md), [Steps 11–12](docs/progress/completion-11-12.md) |
+| Training and calibration mechanics | A bounded char-n-gram training pilot, versioned model artifacts, Platt/isotonic calibration and threshold-policy selection, all on generated fictional names. | [Steps 13–17](docs/progress/completion-13-17.md) |
+| Grounded LLM harness | Parsing, explanations, validation, prompt-injection tests and a comparison harness, tested with fake or replayed replies only. No provider has been called. | [Step 23](docs/progress/completion-23.md), [LLM notes](docs/llm.md) |
+| Release wiring | Makefile targets, CI (Linux job plus a Windows portability job), a container recipe, `THIRD_PARTY_NOTICES.md` and an end-to-end integration test. | [Step 29](docs/progress/completion-29.md), [reproduction](docs/reproduction.md) |
+
+### Run the v2 stack (fictional)
+
+The commands below assume Linux/WSL with the environment from the [reproduction guide](docs/reproduction.md). On Windows, use the direct `python` commands from that guide.
+
+```sh
+M="make PYTHON=.venv/bin/python QA_PYTHON=.tools/qa/bin/python"
+$M demo                  # API -> human review -> memory -> prior-annotation context -> MCP read, into data/demo/run-<UTC>/
+$M test-v2               # v2 stack and completion-step tests
+$M eval-fictional        # fictional Steps 10-21 evaluations into a new data/eval-fictional/run-<UTC>/
+
+$M init-v2 WORKSPACE=data/review/v2-local
+$M memory-init MEMORY_STORE=data/review/memory-local          # optional
+.venv/bin/python -B -m watchlist.api new-key --actor demo-reviewer --role reviewer
+export WATCHLIST_API_KEYS='<entry>'                              # hash entry only
+$M serve-api WORKSPACE=data/review/v2-local MEMORY_STORE=data/review/memory-local
+$M serve-ui                                                     # http://127.0.0.1:8501; sign in with your own token
+$M memory-publish WORKSPACE=data/review/v2-local MEMORY_STORE=data/review/memory-local
+$M serve-mcp WORKSPACE=data/review/v2-local MCP_ORIGIN=test     # stdio, for a local MCP client
+```
+
+How these commands behave:
+- **Memory is optional.** It is attached only when `MEMORY_STORE` is set, and it is opened read-only. Publishing completed cases is the separate `memory-publish` step.
+- **Memory is display-only.** It never changes candidates, ranks or scores.
+- **Nothing listens beyond this machine.** The API binds loopback only.
+
+**Container recipe.** `Dockerfile` and `docker-compose.yml` hold a non-root container recipe. It has not been built or run yet; see [Blocked items](#blocked-items).
+
+### Blocked items
+
+Each item below stays unfinished until its evidence exists. None of them is solved by a limitation paragraph.
+
+| Item | Why it is blocked | Owner | Next action |
+| --- | --- | --- | --- |
+| Step 08 reviewed corpus and genuine human review | The real multilingual corpus, the owner review (SOLO-E) and the accepted release do not exist yet. | Project owner (reviewer) with the data owner | Complete the genuine SOLO-E owner review of the 40-case handoff, then adjudicate and publish an accepted corpus release. |
+| Real experiments: Steps 09, 14–16, 22, 28 | These depend on the Step 08 corpus. Fine-tuning also needs verified local E5/MiniLM weights. Step 22 needs real reviewers. | Coordinator with the project owner | After Step 08: freeze partitions and views (09). Approve the fine-tuning budget and run it (14–15). Select the pipeline on development (16). Run the memory-usefulness study (22). Freeze, then confirm once (28). |
+| Live LLM: Step 18 comparison and Step 23 live run | No provider, model revision, data-transfer scope, retention, budget or request cap has been approved. No key exists. | Project owner | Approve those items. Then run `python -m watchlist.llm.comparison preflight`, followed by the approved `run --allow-live`. |
+| Hugging Face Space (Step 30) | Account, publication and resource approval are missing, and no container build has been verified. | Interfaces/release, with the project owner as publisher | Approve network access for an image build. Build and smoke-test the container locally, then request publication approval. |
+| Azure and Microsoft 365 (Step 31) | Tenant, budget and deployment approval are missing. There is no Postgres backend and no authenticated HTTP MCP. | Interfaces/release, with the tenant administrator | Obtain tenant and budget approval. Build and test the Postgres ledger and authenticated MCP locally first. |
+| Container build and hosted CI run | No container runtime build was approved, so the image has not been built. The Linux and Windows CI jobs have not been run on hosted runners. | Project owner (approval) and the integration engineer | Approve a bounded image build (`podman build`) with a compose smoke test, and a hosted CI dispatch. Record the outcomes in a completion report. |
+
+### Step 08 corpus status (history)
 
 Step 08 now includes completed [C1 readiness queues](docs/progress/completion-08b-c1.md), [C2 review packets and ledgers](docs/progress/completion-08b-c2.md), [C3 adjudication preparation](docs/progress/completion-08b-c3.md), and the [40-case human-review handoff](docs/progress/completion-08b-h1-i.md). The approved [solo-researcher protocol](docs/progress/step-08-solo-protocol-proposal.md) preserves the original multi-reviewer track while explicitly narrowing evidence and evaluation claims.
 
@@ -16,6 +84,8 @@ The approved **Step 08B-2R continuation completed OFAC/EU acquisition and offlin
 
 Completion Steps 00–05 delivered the preservation and repair work below. The [Step 06 report](docs/progress/completion-06.md) records the engineering checks, approval scope and final acceptance status. Completion Steps are distinct from the historical Phase 0–10 records. See the [current phase guide](docs/implementation-phases.md), [completion plan](docs/project-completion-plan.md), and [evaluation repair report](docs/progress/completion-05.md).
 
+The table below describes the earlier (v1) prototype capabilities, which remain available.
+
 | Capability | Implemented behavior |
 | --- | --- |
 | Fictional baseline | Packaged records, Unicode normalization, deterministic RapidFuzz alias ranking, JSON CLI. |
@@ -26,7 +96,14 @@ Completion Steps 00–05 delivered the preservation and repair work below. The [
 | Evaluation | Bound query/source/view ancestry, separate partition/presence/ambiguity labels, script sets, explicit shortlist metrics. |
 | Historical inspection | A separate archive reader verifies preserved cases without executing an incompatible workflow. |
 
-There is no project fine-tuning, fitted calibration, automatic match/clear policy, frontier-LLM comparison, long-term reviewer memory, API/UI, or deployed HF/Azure/Microsoft 365 integration. These remain work in the completion plan; Project 2 is excluded. Missing external access is tracked in the [access/resource ledger](docs/access-and-resource-ledger.md).
+The following do not exist:
+- real-data fine-tuning (the training, calibration and policy code has run on generated fictional names only);
+- an automatic match/clear policy;
+- a live frontier-LLM comparison;
+- real-data reviewer-memory evidence;
+- a deployed HF, Azure or Microsoft 365 integration.
+
+The v2 API, UI, MCP and memory exist, but only for local fictional use; see the v2 table above. The companion Follow the Money project (blockchain payment tracing) is maintained in its own repository. Missing external access is tracked in the [access/resource ledger](docs/access-and-resource-ledger.md).
 
 ## Run the existing environment
 
@@ -44,7 +121,10 @@ WATCHLIST_WHEELHOUSE=data/eval-comparisons/completion-06/wheelhouse \
 
 The CLI uses the packaged fictional fixture and needs neither model weights nor an API key. Tests use fictional records, deterministic vectors, and temporary stores. The full test target includes packaging checks, which require a compatible locally cached RapidFuzz wheel. The shown wheelhouse contains the separately approved CPython 3.14/macOS ARM64 wheel; another host needs its own approved compatible cache. Optional tests can skip when their packages are absent; a partial environment is not evidence that the full project passed. Already-local model checks are separate opt-in tests, not downloads.
 
-**Python 3.14 is the declared target (`>=3.14,<3.15`); local CPython 3.14.0 on macOS ARM64 is the demonstrated runtime.** Python 3.11–3.13 are outside the narrowed declaration. Actual hosted runs use Python 3.14.0 on Ubuntu 24.04; their exact commits, outcomes and repairs are recorded in the [Step 07 report](docs/progress/completion-07.md). Windows is not a tested target; review storage uses POSIX file locks.
+**Python 3.14 is the declared target (`>=3.14,<3.15`); local CPython 3.14.0 on macOS ARM64 is the demonstrated runtime.** Python 3.11–3.13 are outside the narrowed declaration. Actual hosted runs use Python 3.14.0 on Ubuntu 24.04; their exact commits, outcomes and repairs are recorded in the [Step 07 report](docs/progress/completion-07.md). Windows support depends on the component:
+- **The historical v1 agent** (`src/watchlist/agent/`) uses POSIX file locks and is not a Windows target.
+- **The v2 stack** (review service, API, UI, MCP, memory and the completion-step modules) uses portable locks and has been tested locally on Windows with CPython 3.14. See the [Step 29 report](docs/progress/completion-29.md) for counts.
+- **Hosted Windows CI** has a prepared job that has not yet run.
 
 The inspected local `uv` 0.13.5 executable has been copied with a checksum receipt to `.tools/bin/uv`; no temporary installer path is required. The reviewed local metadata/tool cache is `.tools/uv-cache`. Set `UV_CACHE_DIR` to its absolute path so checks that change directory still use the same cache. Other hosts need compatible, approved tools and cached artifacts. The project requires that uv version, and Makefile commands accept a `UV` executable override. The existing `.venv` can run directly while its interpreter and packages remain available. A lockfile records exact package versions/artifact hashes; it does not prove every platform or optional combination works.
 
@@ -80,7 +160,7 @@ WATCHLIST_WHEELHOUSE=data/eval-comparisons/completion-06/wheelhouse \
   make PYTHON=.venv/bin/python QA_PYTHON=.tools/qa/bin/python UV=.tools/bin/uv package-smoke
 ```
 
-`eval-smoke` has passed with 157 deterministic current-contract fictional queries, excluding timing from its comparison. `inventory` separates installed packages, lock entries and unreviewed license metadata; see the [inventory evidence and limits](docs/access-and-resource-ledger.md). The project's own release-license decision remains with its owner. An inventory is not a legal clearance.
+`eval-smoke` has passed with 157 deterministic current-contract fictional queries, excluding timing from its comparison. `inventory` separates installed packages, lock entries and unreviewed license metadata; see the [inventory evidence and limits](docs/access-and-resource-ledger.md). The project's own code is MIT-licensed; dependency, model and data terms are separate. An inventory is not a legal clearance.
 
 The packaging checks build a wheel/source archive, rebuild the wheel from the archive, install the core package into an empty environment, verify packaged resources and native RapidFuzz, and run the fictional CLI outside the repository. They also exercise the separate locked QA setup. The core check installs only this project and RapidFuzz; it does not reproduce every optional model/agent dependency on every platform. Receipts under `data/eval-comparisons/completion-06/` bind each checked build to its input/artifact hashes; the Step 06 report records actual outcomes.
 
@@ -190,5 +270,6 @@ Archive verification never grants permission to execute the old workflow. Local 
 - [Phase guide and approval gates](docs/implementation-phases.md)
 - [Access, costs, terms and dependency inventory](docs/access-and-resource-ledger.md)
 - [Architecture decisions](docs/adr/) and [backup/restore guidance](docs/maintenance/baseline-and-backup.md)
+- v2 stack: [reproduction guide](docs/reproduction.md), [API](docs/api.md), [reviewer guide](docs/reviewer-guide.md), [MCP](docs/mcp.md), [operations](docs/operations.md), [threat model](docs/threat-model.md), [data lifecycle](docs/data-lifecycle.md), [third-party notices](THIRD_PARTY_NOTICES.md), [Step 29 report](docs/progress/completion-29.md)
 
 Training, calibration, new sources, hosted services, and Microsoft 365 delivery need their own approved scope and evidence. Passing local fixtures cannot establish operational screening accuracy or a legal/compliance guarantee.

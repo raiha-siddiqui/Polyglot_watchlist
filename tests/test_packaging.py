@@ -38,7 +38,14 @@ RESOURCES = {
     "watchlist/ingest/schema.sql",
     "watchlist/corpus_schema.sql",
     "watchlist/agent/schema.sql",
+    "watchlist/review/schema.sql",
+    "watchlist/case_memory/schema.sql",
 }
+PACKAGE_ENTRY_POINTS = {
+    f"watchlist/{name}/__init__.py"
+    for name in ("review", "api", "ui", "mcp_server", "case_memory", "llm")
+}
+PACKAGE_PREFIXES = ("watchlist/",)
 
 
 def sha256(path: Path) -> str:
@@ -114,7 +121,8 @@ def run_checked(
 def source_files() -> dict[str, Path]:
     return {
         str(path.relative_to(ROOT / "src")): path
-        for path in (ROOT / "src/watchlist").rglob("*")
+        for package in PACKAGE_PREFIXES
+        for path in (ROOT / "src" / package).rglob("*")
         if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
     }
 
@@ -225,14 +233,15 @@ def test_wheel_includes_exact_package_sources_and_runtime_resources(distribution
     with zipfile.ZipFile(distributions["wheel"]) as archive:
         members = archive.namelist()
         assert len(members) == len(set(members))
-        actual = {name for name in members if name.startswith("watchlist/")}
+        actual = {name for name in members if name.startswith(PACKAGE_PREFIXES)}
         expected = source_files()
         assert actual == set(expected)
-        assert RESOURCES <= actual
+        assert RESOURCES | PACKAGE_ENTRY_POINTS <= actual
         for name, source in expected.items():
             assert archive.read(name) == source.read_bytes()
         assert all(
-            name.startswith("watchlist/") or ".dist-info/" in name for name in members
+            name.startswith(PACKAGE_PREFIXES) or ".dist-info/" in name
+            for name in members
         )
         assert all(
             ".." not in PurePosixPath(name).parts and not name.startswith("/")
@@ -249,6 +258,7 @@ def test_wheel_metadata_and_record_hashes_are_complete(distributions):
         )
         metadata = BytesParser().parsebytes(archive.read(metadata_name))
         project = distributions["project"]["project"]
+        assert metadata["License-Expression"] == project["license"] == "MIT"
         assert (
             metadata["Name"] == project["name"]
             and metadata["Version"] == project["version"]
@@ -270,10 +280,10 @@ def test_wheel_metadata_and_record_hashes_are_complete(distributions):
                 or requirement.marker.evaluate({"extra": extra})
             ]
             assert {
-                (requirement.name, str(requirement.specifier))
+                (canonicalize_name(requirement.name), str(requirement.specifier))
                 for requirement in included
             } == {
-                (requirement.name, str(requirement.specifier))
+                (canonicalize_name(requirement.name), str(requirement.specifier))
                 for requirement in expected
             }
         record_name = next(name for name in names if name.endswith(".dist-info/RECORD"))
@@ -307,10 +317,19 @@ def test_source_distribution_excludes_local_data_models_and_history(distribution
         expected.update(
             {
                 name: ROOT / name
-                for name in (".gitignore", "pyproject.toml", "README.md", "uv.lock")
+                for name in (
+                    ".gitignore",
+                    "pyproject.toml",
+                    "README.md",
+                    "uv.lock",
+                    "LICENSE",
+                )
             }
         )
         assert set(files) == set(expected) | {"PKG-INFO"}
+        assert {
+            "src/" + name for name in RESOURCES | PACKAGE_ENTRY_POINTS
+        } <= files.keys()
         for name, path in expected.items():
             assert archive.extractfile(files[name]).read() == path.read_bytes()
         distributions["receipt"]["sdist_members"] = sorted(files)
@@ -456,7 +475,7 @@ native_scorer = isinstance(scorer.__spec__.loader, ExtensionFileLoader) and any(
     for suffix in EXTENSION_SUFFIXES
 )
 resources = {name: len(files('watchlist').joinpath(name).read_bytes())
-             for name in ('data/synthetic_entities.json', 'ingest/schema.sql', 'agent/schema.sql')}
+             for name in json.loads(sys.argv[1])}
 print(json.dumps({'package_path': watchlist.__file__, 'prefix': sys.prefix,
                   'sys_path': sys.path, 'resources': resources,
                   'entities': len(load_entities()), 'scorer_module': fuzz.WRatio.__module__,
@@ -469,7 +488,14 @@ print(json.dumps({'package_path': watchlist.__file__, 'prefix': sys.prefix,
                                 for item in metadata.distributions()}}))
 """
     inspection = run_checked(
-        [str(python), "-I", "-B", "-c", inspect],
+        [
+            str(python),
+            "-I",
+            "-B",
+            "-c",
+            inspect,
+            json.dumps(sorted(name.removeprefix("watchlist/") for name in RESOURCES)),
+        ],
         cwd=working,
         commands=receipt["commands"],
     )

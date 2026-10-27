@@ -1,0 +1,107 @@
+# Research-only fictional demo: review API + Streamlit reviewer UI.
+#
+# NOT run in Completion Step 29 (no container runtime build was approved);
+# treat it as a reviewed starting point, not verified deployment evidence.
+#
+# Before `docker compose up --build` (or `podman compose up --build`):
+#   1. python -B -m watchlist.api new-key --actor demo-reviewer --role reviewer
+#      prints {"entry": "...", "token": "..."} once.
+#   2. Put the entry line (actor:role:sha256, no token) into
+#      deploy/secrets/api-keys.txt (git-ignored; create the folder).
+#   3. Keep the token private; enter it in the UI sign-in form for your session.
+#   4. Open http://127.0.0.1:8501 on this machine. Nothing else is published.
+#
+# The API refuses non-loopback hosts, so it binds 127.0.0.1 inside the api
+# container. The ui service shares that network namespace and reaches it at
+# 127.0.0.1:8000; the API port is never published. Fictional data only.
+
+name: polyglot-watchlist
+
+services:
+  api:
+    build: .
+    image: polyglot-watchlist:dev
+    # Create the workspace on first start (never over an existing one), then serve.
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        test -e /workspace/review ||
+        python -B -m watchlist.review v2 init --workspace /workspace/review
+        --config /app/config/review-v2.json;
+        exec python -B -m watchlist.api serve --workspace /workspace/review
+        --config /app/config/review-v2.json --host 127.0.0.1 --port 8000
+    # Opt-in reviewer memory: create the store once with
+    #   python -B -m watchlist.stack memory-init --store /workspace/memory
+    #     --memory-config /app/config/memory.json
+    # then append to the serve command:
+    #   --memory-store /workspace/memory --memory-config /app/config/memory.json
+    environment:
+      WATCHLIST_API_KEYS_FILE: /run/secrets/watchlist_api_keys
+    secrets:
+      - watchlist_api_keys
+    volumes:
+      - workspace:/workspace
+    # The UI shares this network namespace, so its port is published here,
+    # bound to the host's loopback only.
+    ports:
+      - "127.0.0.1:8501:8501"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 1g
+    cpus: 1.0
+    pids_limit: 256
+    restart: unless-stopped
+
+  ui:
+    image: polyglot-watchlist:dev
+    depends_on:
+      api:
+        condition: service_healthy
+    network_mode: "service:api"
+    command:
+      - python
+      - -B
+      - -m
+      - streamlit
+      - run
+      - /opt/venv/lib/python3.14/site-packages/watchlist/ui/app.py
+      - --server.address=0.0.0.0
+      - --server.port=8501
+      - --server.headless=true
+      - --browser.gatherUsageStats=false
+      - --server.allowedHosts=localhost
+      - --server.allowedHosts=127.0.0.1
+    environment:
+      WATCHLIST_API_URL: http://127.0.0.1:8000
+      HOME: /tmp
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -B
+        - -c
+        - "import sys, urllib.request as u; r = u.build_opener(u.ProxyHandler({})).open('http://127.0.0.1:8501/_stcore/health', timeout=4); sys.exit(0 if r.status == 200 else 1)"
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 1g
+    cpus: 1.0
+    pids_limit: 256
+    restart: unless-stopped
+
+volumes:
+  workspace: {}
+
+secrets:
+  watchlist_api_keys:
+    file: ./deploy/secrets/api-keys.txt

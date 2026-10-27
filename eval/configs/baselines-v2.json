@@ -1,0 +1,40 @@
+{
+  "protocol_version": "baselines-evaluation-v2",
+  "usage": "Fictional/synthetic regression and mechanics evidence only. Not a real-data result; the reviewed corpus from Step 08 is required for that.",
+  "datasets": ["fictional", "multilingual", "synthetic-scale"],
+  "partitions": ["development"],
+  "requested_k": 50,
+  "timing_repetitions": 2,
+  "arms": [
+    "exact_normalized",
+    "levenshtein",
+    "jaro_winkler",
+    "token_sort",
+    "token_set",
+    "phonetic_metaphone",
+    "phonetic_nysiis",
+    "translit_levenshtein",
+    "char_ngram_cosine",
+    "hybrid_rrf",
+    "hybrid_rrf_depth10",
+    "hybrid_rrf_hnsw"
+  ],
+  "synthetic_scale": {"entity_count": 400, "seed": 42, "absent_count": 40},
+  "dense_encoder": {"kind": "hashed-char-ngram-v1", "dimension": 256, "ngram_range": [2, 3]},
+  "hybrid_variants": [
+    {"arm": "hybrid_rrf", "weights": {"lexical": 1.0, "phonetic": 1.0, "dense": 1.0}, "rrf_k": 60,
+     "per_arm_depth": 50, "lexical_arm": "levenshtein", "phonetic_arm": "phonetic_metaphone", "dense_backend": "exact"},
+    {"arm": "hybrid_rrf_depth10", "weights": {"lexical": 1.0, "phonetic": 1.0, "dense": 1.0}, "rrf_k": 60,
+     "per_arm_depth": 10, "lexical_arm": "levenshtein", "phonetic_arm": "phonetic_metaphone", "dense_backend": "exact"},
+    {"arm": "hybrid_rrf_hnsw", "weights": {"lexical": 1.0, "phonetic": 1.0, "dense": 1.0}, "rrf_k": 60,
+     "per_arm_depth": 50, "lexical_arm": "levenshtein", "phonetic_arm": "phonetic_metaphone", "dense_backend": "hnsw",
+     "dense_parameters": {"connectivity": 16, "expansion_add": 128, "expansion_search": 64}}
+  ],
+  "not_run": [
+    {"arm": "double_metaphone", "reason": "jellyfish provides Metaphone/NYSIIS/Soundex but not Double Metaphone; a licensed pinned implementation has not been selected or approved."},
+    {"arm": "opensanctions_matcher", "reason": "local yente/nomenklatura logic matcher not installed or license/terms-verified in this environment; no live/paid API substitute is used."},
+    {"arm": "e5_small_pretrained", "reason": "verified local weights (data/models/e5-small) are absent in this checkout; no download was performed. Existing compare_retrieval covers E5 when weights are present."},
+    {"arm": "labse", "reason": "model, license and resource approval not granted."},
+    {"arm": "final_test_partition", "reason": "test partition kept sealed; development only."}
+  ]
+}
